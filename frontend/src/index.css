@@ -139,3 +139,14 @@ body {
     display: contents !important;
   }
 }
+[data-testid*="emergent"],
+[class*="emergent"],
+div[class^="made-with-emergent"],
+iframe[src*="emergent"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    pointer-events: none !important;
+}
