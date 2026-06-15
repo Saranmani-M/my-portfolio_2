@@ -8,7 +8,7 @@ export const PROFILE = {
   photoUrl:
     "https://customer-assets.emergentagent.com/job_saranmani-portfolio/artifacts/uiidkdb9_ChatGPT%20Image%20Jun%207%2C%202026%2C%2006_04_26%20PM%20%281%29%20%281%29.png",
   resumeUrl:
-    "https://customer-assets.emergentagent.com/job_saranmani-portfolio/artifacts/4kgnvuo0_Saranmani%20Resume%20for%20storage%282%29.docx",
+    "https://customer-assets.emergentagent.com/job_saranmani-portfolio/artifacts/le5z4x2i_Saranmani_Resume.pdf",
   headline:
     "Building Secure Cloud Infrastructure with Python, AWS & Modern Security Practices.",
   description:
@@ -20,7 +20,7 @@ export const SOCIALS = {
   github: "https://github.com/Saranmani-M",
   instagram: "https://www.instagram.com/m.sxrxn/",
   twitter: "https://x.com/Saran0048597646",
-  leetcode: "https://leetcode.com/u/AV17koPArh/",
+  leetcode: "https://leetcode.com/u/M-SARANMANI/",
 };
 
 export const NAV = [
@@ -145,8 +145,8 @@ export const PROFILES = [
   },
   {
     name: "LeetCode",
-    handle: "@AV17koPArh",
-    url: "https://leetcode.com/u/AV17koPArh/",
+    handle: "@M-SARANMANI",
+    url: "https://leetcode.com/u/M-SARANMANI/",
     line: "Algorithmic practice — building muscle memory in Python.",
   },
 ];

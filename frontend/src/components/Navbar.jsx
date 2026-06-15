@@ -39,15 +39,16 @@ export const Navbar = () => {
 
   return (
     <>
-      <motion.nav
-        data-testid="navbar"
-        initial={{ y: -40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-        className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-          scrolled ? "scale-[0.98]" : ""
-        }`}
-      >
+      <div className="fixed top-5 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+        <motion.nav
+          data-testid="navbar"
+          initial={{ y: -40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+          className={`pointer-events-auto transition-transform duration-500 ${
+            scrolled ? "scale-[0.98]" : ""
+          }`}
+        >
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-1 px-3 py-2 rounded-full bg-[#0D0D0D]/70 backdrop-blur-xl border border-white/10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.8)]">
           <div
@@ -81,19 +82,20 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile */}
-        <div className="md:hidden flex items-center justify-between gap-3 px-4 py-2.5 rounded-full bg-[#0D0D0D]/70 backdrop-blur-xl border border-white/10 min-w-[88vw]">
-          <span className="text-[11px] tracking-[0.22em] uppercase text-white/70">
+        <div className="md:hidden flex items-center justify-between gap-3 px-4 py-2.5 rounded-full bg-[#0D0D0D]/70 backdrop-blur-xl border border-white/10 w-full max-w-[440px]">
+          <span className="text-[11px] tracking-[0.22em] uppercase text-white/70 truncate">
             SARANMANI · M
           </span>
           <button
             data-testid="mobile-menu-toggle"
             onClick={() => setOpen((s) => !s)}
-            className="w-8 h-8 grid place-items-center rounded-full border border-white/10 text-white/80"
+            className="shrink-0 w-9 h-9 grid place-items-center rounded-full border border-white/10 text-white/80"
           >
             {open ? <X size={14} /> : <Menu size={14} />}
           </button>
         </div>
-      </motion.nav>
+        </motion.nav>
+      </div>
 
       <AnimatePresence>
         {open && (
