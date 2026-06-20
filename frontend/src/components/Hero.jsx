@@ -15,11 +15,36 @@ export const Hero = () => {
     <section
       id="home"
       data-testid="hero-section"
-      className="relative min-h-[100svh] pt-32 md:pt-40 pb-16 md:pb-24 px-6 md:px-12"
+      className="relative min-h-[100svh] pt-32 md:pt-40 pb-16 md:pb-24 px-6 md:px-12 overflow-hidden bg-black"
     >
-      <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        {/* Left — editorial typography */}
-        <div className="lg:col-span-7 relative z-10">
+      {/* --- ROTATING BACKGROUND LAYER --- */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-40 pointer-events-none select-none">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 35, // Adjust speed here (higher number = slower, smoother rotation)
+            ease: "linear",
+            repeat: Infinity,
+          }}
+          className="w-[140vw] h-[140vw] md:w-[90vw] md:h-[90vw] max-w-[1200px] max-h-[1200px] aspect-square rounded-full mix-blend-screen"
+          style={{
+            // This replicates the thousands of dark beaded patterns with high contrast shading
+            backgroundImage: `radial-gradient(circle at 3px 3px, rgba(255,255,255,0.15) 1px, transparent 0), 
+                              radial-gradient(circle at 12px 12px, rgba(0,0,0,0.9) 8px, transparent 0)`,
+            backgroundSize: "24px 24px",
+            maskImage: "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0.4) 60%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0.4) 60%, transparent 75%)",
+            boxShadow: "inset 0 0 100px rgba(0,0,0,0.9)",
+            filter: "contrast(180%) brightness(80%)",
+          }}
+        />
+        {/* Subtle foreground depth shadow overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
+        {/* Editorial typography container expanded for impact */}
+        <div className="lg:col-span-9 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -28,7 +53,7 @@ export const Hero = () => {
             data-testid="hero-eyebrow"
           >
             <span className="w-8 h-px bg-white/30" />
-            Portfolio · 2025
+            Portfolio · 2026
           </motion.div>
 
           <h1
@@ -127,61 +152,6 @@ export const Hero = () => {
             </button>
           </motion.div>
         </div>
-
-        {/* Right — premium framed portrait */}
-        <div className="lg:col-span-5 relative">
-          <motion.div
-            initial={{ opacity: 0, scale: 1.06, filter: "blur(14px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.4, ease: easeOut, delay: 0.3 }}
-            className="relative mx-auto w-[78%] sm:w-[60%] md:w-[55%] lg:w-full max-w-[480px]"
-            data-testid="hero-portrait"
-          >
-            {/* Halo */}
-            <div
-              aria-hidden
-              className="absolute -inset-10 rounded-[40px] -z-10"
-              style={{
-                background:
-                  "radial-gradient(closest-side, rgba(167,139,250,0.35), rgba(96,165,250,0.2) 60%, transparent 80%)",
-                filter: "blur(40px)",
-              }}
-            />
-
-            {/* Frame */}
-            <motion.div
-              whileHover={{ scale: 1.015, rotate: -0.4 }}
-              transition={{ type: "spring", stiffness: 120, damping: 14 }}
-              className="relative rounded-[28px] overflow-hidden border border-white/10 portrait-glow bg-[#0D0D0D]"
-            >
-              <div className="absolute inset-0 z-10 pointer-events-none mix-blend-overlay opacity-30 bg-[radial-gradient(ellipse_at_top_right,rgba(167,139,250,0.6),transparent_50%)]" />
-              <img
-                src={PROFILE.photoUrl}
-                alt="Saranmani M"
-                loading="eager"
-                className="w-full h-auto aspect-[4/5] object-cover grayscale-[0.18] contrast-105"
-                style={{ filter: "saturate(0.9) brightness(0.97)" }}
-              />
-              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
-
-              {/* Caption */}
-              <div className="absolute left-5 bottom-5 right-5 flex items-end justify-between text-[10px] tracking-[0.25em] uppercase text-white/70">
-                <span>Saranmani · M</span>
-                <span className="font-mono">Chennai · IND</span>
-              </div>
-            </motion.div>
-
-            {/* Floating meta */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, ease: easeOut, delay: 1.6 }}
-              className="absolute -left-4 md:-left-10 top-10 rotate-[-90deg] origin-left text-[10px] tracking-[0.4em] uppercase text-white/40 hidden md:block"
-            >
-              FIG · 01 — Portrait
-            </motion.div>
-          </motion.div>
-        </div>
       </div>
 
       {/* Scroll hint */}
@@ -189,7 +159,7 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.8, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[10px] tracking-[0.32em] uppercase text-white/40"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[10px] tracking-[0.32em] uppercase text-white/40 z-10"
       >
         <span>Scroll</span>
         <motion.span
