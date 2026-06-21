@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react"; // useRef still used for audio + cursor
 import { motion } from "framer-motion";
 import { Linkedin, Github, Instagram, Twitter } from "lucide-react";
 import { PROFILE, SOCIALS } from "../lib/data";
@@ -60,110 +60,30 @@ const WaveformIcon = ({ playing, size = 16 }) => {
 
 const easeOut = [0.16, 1, 0.3, 1];
 
-// ─── Starfield + green horizon background ────────────────────────────────────
-const SpaceBackground = () => {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const W = canvas.offsetWidth, H = canvas.offsetHeight;
-    canvas.width = W * (window.devicePixelRatio || 1);
-    canvas.height = H * (window.devicePixelRatio || 1);
-    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
-
-    // Stars
-    const stars = Array.from({ length: 220 }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H * 0.78,
-      r: Math.random() * 1.1 + 0.2,
-      o: Math.random() * 0.5 + 0.15,
-      twinkleSpeed: Math.random() * 0.012 + 0.004,
-      twinkleOffset: Math.random() * Math.PI * 2,
-    }));
-
-    let t = 0, animId;
-    const draw = () => {
-      animId = requestAnimationFrame(draw);
-      t += 0.016;
-      ctx.clearRect(0, 0, W, H);
-
-      // Deep space bg
-      const bg = ctx.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0,   "#020608");
-      bg.addColorStop(0.5, "#040d0a");
-      bg.addColorStop(0.78,"#061410");
-      bg.addColorStop(1,   "#000000");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      // Twinkle stars
-      stars.forEach(s => {
-        const alpha = s.o * (0.6 + 0.4 * Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset));
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200,230,210,${alpha})`;
-        ctx.fill();
-      });
-
-      // Green atmospheric glow behind horizon
-      const horizonY = H * 0.74;
-      const glow = ctx.createRadialGradient(W * 0.5, horizonY, 0, W * 0.5, horizonY, W * 0.62);
-      glow.addColorStop(0,   "rgba(30,160,80,0.18)");
-      glow.addColorStop(0.4, "rgba(20,120,60,0.10)");
-      glow.addColorStop(1,   "rgba(0,0,0,0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, W, H);
-
-      // Planet / horizon arc
-      const planetR = W * 0.72;
-      const planetCX = W * 0.5;
-      const planetCY = horizonY + planetR * 0.97;
-
-      // Dark planet body
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(planetCX, planetCY, planetR, 0, Math.PI * 2);
-      const planetFill = ctx.createRadialGradient(planetCX, planetCY - planetR * 0.3, planetR * 0.1, planetCX, planetCY, planetR);
-      planetFill.addColorStop(0, "#0a1510");
-      planetFill.addColorStop(1, "#030806");
-      ctx.fillStyle = planetFill;
-      ctx.fill();
-      ctx.restore();
-
-      // Bright horizon rim glow
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(planetCX, planetCY, planetR, Math.PI, Math.PI * 2);
-      ctx.lineWidth = 2.5;
-      const rimGrad = ctx.createLinearGradient(planetCX - planetR, horizonY, planetCX + planetR, horizonY);
-      rimGrad.addColorStop(0,   "rgba(30,200,90,0)");
-      rimGrad.addColorStop(0.2, "rgba(60,220,110,0.55)");
-      rimGrad.addColorStop(0.5, "rgba(80,255,140,0.95)");
-      rimGrad.addColorStop(0.8, "rgba(60,220,110,0.55)");
-      rimGrad.addColorStop(1,   "rgba(30,200,90,0)");
-      ctx.strokeStyle = rimGrad;
-      ctx.stroke();
-      ctx.restore();
-
-      // Soft bloom above horizon
-      const bloom = ctx.createRadialGradient(planetCX, horizonY, 0, planetCX, horizonY, W * 0.38);
-      bloom.addColorStop(0,   "rgba(60,200,100,0.13)");
-      bloom.addColorStop(0.5, "rgba(30,150,70,0.06)");
-      bloom.addColorStop(1,   "rgba(0,0,0,0)");
-      ctx.fillStyle = bloom;
-      ctx.fillRect(0, 0, W, H);
-    };
-    draw();
-    return () => cancelAnimationFrame(animId);
-  }, []);
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 z-0 w-full h-full"
+// ─── Midjourney image background ─────────────────────────────────────────────
+// Place your generated image at: /space-bg.jpg  (or .png / .webp)
+// Then update the src below to match the filename.
+const SpaceBackground = () => (
+  <div className="absolute inset-0 z-0">
+    {/* The Midjourney-generated image */}
+    <img
+      src="/space-bg.jpg"
+      alt=""
+      aria-hidden="true"
+      className="w-full h-full object-cover object-center"
+      style={{ filter: "brightness(0.82) saturate(1.1)" }}
     />
-  );
-};
+    {/* Top fade — blends into dark for navbar readability */}
+    <div
+      aria-hidden
+      className="absolute inset-0"
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(2,6,8,0.72) 0%, rgba(2,6,8,0.18) 28%, rgba(2,6,8,0.0) 55%, rgba(2,6,8,0.55) 80%, rgba(2,6,8,0.92) 100%)",
+      }}
+    />
+  </div>
+);
 
 // ─── Bottom running strip — company logos ────────────────────────────────────
 const SkillsStrip = () => {
