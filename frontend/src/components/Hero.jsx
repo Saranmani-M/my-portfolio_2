@@ -1,173 +1,152 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Download, Mail } from "lucide-react";
-import { PROFILE } from "../lib/data";
+import { Linkedin, Github, Instagram, Twitter } from "lucide-react";
+import { PROFILE, SOCIALS } from "../lib/data";
 
 const easeOut = [0.16, 1, 0.3, 1];
 
-export const Hero = () => {
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+const SOCIAL_ICONS = [
+  { Icon: Linkedin, url: SOCIALS.linkedin, k: "linkedin" },
+  { Icon: Github, url: SOCIALS.github, k: "github" },
+  { Icon: Instagram, url: SOCIALS.instagram, k: "instagram" },
+  { Icon: Twitter, url: SOCIALS.twitter, k: "x" },
+];
 
+export const Hero = () => {
   return (
     <section
       id="home"
       data-testid="hero-section"
-      className="relative min-h-[100svh] pt-32 md:pt-40 pb-16 md:pb-24 px-6 md:px-12 overflow-hidden bg-black"
+      className="relative min-h-[100svh] overflow-hidden"
     >
-      {/* --- ROTATING BACKGROUND LAYER --- */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-40 pointer-events-none select-none">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 35, // Adjust speed here (higher number = slower, smoother rotation)
-            ease: "linear",
-            repeat: Infinity,
-          }}
-          className="w-[140vw] h-[140vw] md:w-[90vw] md:h-[90vw] max-w-[1200px] max-h-[1200px] aspect-square rounded-full mix-blend-screen"
+      {/* Full-bleed dramatic portrait on the right */}
+      <motion.div
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.6, ease: easeOut }}
+        className="absolute inset-y-0 right-0 w-full md:w-[60%] lg:w-[58%] z-0"
+        data-testid="hero-portrait"
+      >
+        <div className="absolute inset-0 bg-[#050505]" />
+        <img
+          src={PROFILE.photoUrl}
+          alt="Saranmani M"
+          className="w-full h-full object-cover object-[center_15%] md:object-[center_30%] opacity-95"
+          style={{ filter: "grayscale(1) contrast(1.18) brightness(0.72)" }}
+        />
+        {/* Left edge gradient blends portrait into dark bg */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
           style={{
-            // This replicates the thousands of dark beaded patterns with high contrast shading
-            backgroundImage: `radial-gradient(circle at 3px 3px, rgba(255,255,255,0.15) 1px, transparent 0), 
-                              radial-gradient(circle at 12px 12px, rgba(0,0,0,0.9) 8px, transparent 0)`,
-            backgroundSize: "24px 24px",
-            maskImage: "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0.4) 60%, transparent 75%)",
-            WebkitMaskImage: "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0.4) 60%, transparent 75%)",
-            boxShadow: "inset 0 0 100px rgba(0,0,0,0.9)",
-            filter: "contrast(180%) brightness(80%)",
+            background:
+              "linear-gradient(90deg, #050505 0%, #050505 18%, rgba(5,5,5,0.7) 32%, rgba(5,5,5,0.2) 50%, transparent 70%)",
           }}
         />
-        {/* Subtle foreground depth shadow overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
-      </div>
+        {/* Soft vignette */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%)",
+          }}
+        />
+      </motion.div>
 
-      <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
-        {/* Editorial typography container expanded for impact */}
-        <div className="lg:col-span-9 relative z-10">
+      {/* Foreground content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 lg:px-12 pt-28 md:pt-32 pb-16 md:pb-20 min-h-[100svh] flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 1.2, ease: easeOut, delay: 0.3 }}
+          className="max-w-[640px] mt-4 md:mt-8"
+        >
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: easeOut, delay: 0.1 }}
-            className="flex items-center gap-3 mb-8 text-[11px] tracking-[0.28em] uppercase text-white/55"
-            data-testid="hero-eyebrow"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            data-testid="badge-open-to-work"
+            className="inline-flex items-center gap-2.5 mb-6 md:mb-8 px-3 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/5 text-emerald-300 text-[10px] tracking-[0.22em] uppercase"
           >
-            <span className="w-8 h-px bg-white/30" />
-            Portfolio · 2026
+            <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+            Open to Work · 2026
           </motion.div>
 
           <h1
-            className="font-serif text-white text-balance leading-[0.92]"
             data-testid="hero-name"
-            style={{ letterSpacing: "-0.02em" }}
+            className="font-sans font-extrabold tracking-[-0.03em] leading-[0.92] text-white text-[3.5rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[7rem]"
           >
-            {"SARANMANI".split("").map((c, i) => (
-              <motion.span
-                key={`s1-${i}`}
-                initial={{ y: "110%", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{
-                  duration: 0.9,
-                  delay: 0.25 + i * 0.04,
-                  ease: easeOut,
-                }}
-                className="inline-block text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-light"
-              >
-                {c}
-              </motion.span>
-            ))}
+            Building
             <br />
-            <span className="inline-flex items-baseline gap-4">
-              {"M.".split("").map((c, i) => (
-                <motion.span
-                  key={`s2-${i}`}
-                  initial={{ y: "110%", opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{
-                    duration: 0.9,
-                    delay: 0.6 + i * 0.05,
-                    ease: easeOut,
-                  }}
-                  className="inline-block text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-light italic text-white/85"
-                >
-                  {c}
-                </motion.span>
-              ))}
-            </span>
+            Secure Cloud
+            <br />
+            Since 2025
           </h1>
+        </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.1, ease: easeOut, delay: 1.05 }}
-            className="mt-10 max-w-xl font-serif text-2xl md:text-3xl text-white/90 leading-snug text-balance"
-            data-testid="hero-headline"
+        <div className="flex-1 min-h-[40px]" />
+
+        <div className="max-w-[520px] space-y-7 md:space-y-9">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1, ease: easeOut }}
           >
-            Building <em className="italic text-white">secure cloud</em>{" "}
-            infrastructure with Python, AWS &amp; modern security practices.
-          </motion.p>
+            <p className="text-[18px] md:text-[20px] text-white font-medium leading-relaxed">
+              Hi, I am Saranmani M
+            </p>
+            <p
+              className="mt-1 text-[15px] md:text-[16px] text-white/55 leading-relaxed"
+              data-testid="hero-role"
+            >
+              Final-year IT Student at Vel Tech · Aspiring Cloud &amp; Storage
+              Engineer
+            </p>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: easeOut, delay: 1.2 }}
-            className="mt-6 max-w-md text-[15px] leading-relaxed text-[#A1A1AA]"
+            transition={{ duration: 1, delay: 1.15, ease: easeOut }}
             data-testid="hero-description"
+            className="text-[14px] md:text-[15px] leading-[1.7] text-white/45 max-w-[460px]"
           >
-            {PROFILE.description}
+            I spent the last two years living inside Linux terminals,
+            cryptography papers and cloud consoles — only to learn that the
+            most reliable systems come from mastering the quiet fundamentals.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: easeOut, delay: 1.35 }}
-            className="mt-10 flex flex-wrap items-center gap-3"
+            transition={{ duration: 1, delay: 1.3, ease: easeOut }}
+            className="flex items-center gap-5 pt-2"
           >
-            <button
-              data-testid="cta-projects"
-              onClick={() => scrollTo("projects")}
-              className="group inline-flex items-center gap-2 rounded-full bg-white text-black px-6 py-3 text-[13px] tracking-wide hover:bg-white/90 transition-all"
-            >
-              View Projects
-              <ArrowUpRight
-                size={14}
-                className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
-            </button>
+            {SOCIAL_ICONS.map(({ Icon, url, k }) => (
+              <a
+                key={k}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid={`hero-social-${k}`}
+                className="text-white/55 hover:text-[#e8ff47] transition-colors"
+              >
+                <Icon size={20} strokeWidth={1.5} />
+              </a>
+            ))}
             <a
-              data-testid="cta-resume"
               href={PROFILE.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-[13px] tracking-wide text-white hover:bg-white/[0.04] transition-all"
+              data-testid="cta-resume"
+              className="ml-3 text-[11px] tracking-[0.22em] uppercase text-white/65 hover:text-[#e8ff47] link-underline"
             >
-              Download Resume <Download size={14} />
+              Résumé →
             </a>
-            <button
-              data-testid="cta-contact"
-              onClick={() => scrollTo("contact")}
-              className="group inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-[13px] tracking-wide text-white/80 hover:text-white hover:border-white/25 transition-all"
-            >
-              Contact Me <Mail size={13} />
-            </button>
           </motion.div>
         </div>
       </div>
-
-      {/* Scroll hint */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[10px] tracking-[0.32em] uppercase text-white/40 z-10"
-      >
-        <span>Scroll</span>
-        <motion.span
-          animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          className="w-px h-8 bg-white/30"
-        />
-      </motion.div>
     </section>
   );
 };
