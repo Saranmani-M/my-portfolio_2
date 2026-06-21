@@ -58,44 +58,112 @@ const WaveformIcon = ({ playing, size = 16 }) => {
   );
 };
 
-// ─── Portrait background (from Hero v1) ──────────────────────────────────────
 const easeOut = [0.16, 1, 0.3, 1];
 
-const PortraitBackground = () => (
-  <motion.div
-    initial={{ opacity: 0, scale: 1.05 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 1.6, ease: easeOut }}
-    className="absolute inset-y-0 right-0 w-full md:w-[60%] lg:w-[58%] z-0"
-    data-testid="hero-portrait"
-  >
-    <div className="absolute inset-0 bg-[#050505]" />
-    <img
-      src={PROFILE.photoUrl}
-      alt="Saranmani M"
-      className="w-full h-full object-cover object-[center_15%] md:object-[center_30%] opacity-95"
-      style={{ filter: "grayscale(1) contrast(1.18) brightness(0.72)" }}
+// ─── Starfield + green horizon background ────────────────────────────────────
+const SpaceBackground = () => {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.offsetWidth, H = canvas.offsetHeight;
+    canvas.width = W * (window.devicePixelRatio || 1);
+    canvas.height = H * (window.devicePixelRatio || 1);
+    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+    // Stars
+    const stars = Array.from({ length: 220 }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H * 0.78,
+      r: Math.random() * 1.1 + 0.2,
+      o: Math.random() * 0.5 + 0.15,
+      twinkleSpeed: Math.random() * 0.012 + 0.004,
+      twinkleOffset: Math.random() * Math.PI * 2,
+    }));
+
+    let t = 0, animId;
+    const draw = () => {
+      animId = requestAnimationFrame(draw);
+      t += 0.016;
+      ctx.clearRect(0, 0, W, H);
+
+      // Deep space bg
+      const bg = ctx.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0,   "#020608");
+      bg.addColorStop(0.5, "#040d0a");
+      bg.addColorStop(0.78,"#061410");
+      bg.addColorStop(1,   "#000000");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // Twinkle stars
+      stars.forEach(s => {
+        const alpha = s.o * (0.6 + 0.4 * Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,230,210,${alpha})`;
+        ctx.fill();
+      });
+
+      // Green atmospheric glow behind horizon
+      const horizonY = H * 0.74;
+      const glow = ctx.createRadialGradient(W * 0.5, horizonY, 0, W * 0.5, horizonY, W * 0.62);
+      glow.addColorStop(0,   "rgba(30,160,80,0.18)");
+      glow.addColorStop(0.4, "rgba(20,120,60,0.10)");
+      glow.addColorStop(1,   "rgba(0,0,0,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+
+      // Planet / horizon arc
+      const planetR = W * 0.72;
+      const planetCX = W * 0.5;
+      const planetCY = horizonY + planetR * 0.97;
+
+      // Dark planet body
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(planetCX, planetCY, planetR, 0, Math.PI * 2);
+      const planetFill = ctx.createRadialGradient(planetCX, planetCY - planetR * 0.3, planetR * 0.1, planetCX, planetCY, planetR);
+      planetFill.addColorStop(0, "#0a1510");
+      planetFill.addColorStop(1, "#030806");
+      ctx.fillStyle = planetFill;
+      ctx.fill();
+      ctx.restore();
+
+      // Bright horizon rim glow
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(planetCX, planetCY, planetR, Math.PI, Math.PI * 2);
+      ctx.lineWidth = 2.5;
+      const rimGrad = ctx.createLinearGradient(planetCX - planetR, horizonY, planetCX + planetR, horizonY);
+      rimGrad.addColorStop(0,   "rgba(30,200,90,0)");
+      rimGrad.addColorStop(0.2, "rgba(60,220,110,0.55)");
+      rimGrad.addColorStop(0.5, "rgba(80,255,140,0.95)");
+      rimGrad.addColorStop(0.8, "rgba(60,220,110,0.55)");
+      rimGrad.addColorStop(1,   "rgba(30,200,90,0)");
+      ctx.strokeStyle = rimGrad;
+      ctx.stroke();
+      ctx.restore();
+
+      // Soft bloom above horizon
+      const bloom = ctx.createRadialGradient(planetCX, horizonY, 0, planetCX, horizonY, W * 0.38);
+      bloom.addColorStop(0,   "rgba(60,200,100,0.13)");
+      bloom.addColorStop(0.5, "rgba(30,150,70,0.06)");
+      bloom.addColorStop(1,   "rgba(0,0,0,0)");
+      ctx.fillStyle = bloom;
+      ctx.fillRect(0, 0, W, H);
+    };
+    draw();
+    return () => cancelAnimationFrame(animId);
+  }, []);
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 z-0 w-full h-full"
     />
-    {/* Left edge gradient blends portrait into dark bg */}
-    <div
-      aria-hidden
-      className="absolute inset-0"
-      style={{
-        background:
-          "linear-gradient(90deg, #050505 0%, #050505 18%, rgba(5,5,5,0.7) 32%, rgba(5,5,5,0.2) 50%, transparent 70%)",
-      }}
-    />
-    {/* Soft vignette */}
-    <div
-      aria-hidden
-      className="absolute inset-0"
-      style={{
-        background:
-          "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%)",
-      }}
-    />
-  </motion.div>
-);
+  );
+};
 
 // ─── Bottom running strip — company logos ────────────────────────────────────
 const SkillsStrip = () => {
@@ -212,10 +280,12 @@ export const Hero = () => {
     <>
       <style>{`
         ${!isTouch ? `html,body,#root,a,button,img,svg,[role="button"]{cursor:none!important}` : ""}
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         @keyframes marquee-ltr { from{transform:translateX(0)} to{transform:translateX(-25%)} }
         @keyframes waveBar     { from{transform:scaleY(0.3)}  to{transform:scaleY(1)} }
         @media(prefers-reduced-motion:reduce){[style*="animation"]{animation:none!important}}
         .soc { display:inline-flex;align-items:center;justify-content:center;padding:7px;min-width:36px;min-height:36px; }
+        .hero-serif { font-family: 'Playfair Display', Georgia, serif; }
       `}</style>
 
       {/* Custom cursor */}
@@ -230,34 +300,32 @@ export const Hero = () => {
         id="home"
         data-testid="hero-section"
         className="relative min-h-screen overflow-hidden flex flex-col"
-        style={{ background: "#050505" }}
+        style={{ background: "#020608" }}
       >
-        {/* ── Portrait background (replaces GlassBubbleBackground) ── */}
-        <PortraitBackground />
+        {/* ── Space background ── */}
+        <SpaceBackground />
 
-        {/* ── Navbar pill ── */}
-        <div className="fixed top-4 left-0 right-0 z-50 flex justify-center pointer-events-none">
-          <motion.div
-            variants={drop} initial="hidden" animate="visible" custom={0}
-            className="pointer-events-auto flex items-center gap-3 select-none bg-black/45 backdrop-blur-md px-3 py-2 rounded-full border border-white/[0.07] shadow-lg whitespace-nowrap max-w-[calc(100vw-2rem)]"
+        {/* ── Music toggle — top right ── */}
+        <motion.div
+          variants={drop} initial="hidden" animate="visible" custom={0}
+          className="fixed top-4 right-4 z-50"
+        >
+          <button onClick={toggleMusic} aria-label={playing ? "Pause" : "Play"}
+            className={`flex items-center justify-center w-9 h-9 rounded-full bg-black/45 backdrop-blur-md border border-white/[0.07] shadow-lg transition-colors ${playing ? "text-white" : "text-white/35 hover:text-white"}`}
           >
-            <button onClick={toggleMusic} aria-label={playing ? "Pause" : "Play"}
-              className={`flex items-center justify-center p-1.5 rounded-full transition-colors ${playing ? "text-white" : "text-white/35 hover:text-white"}`}
-            >
-              <WaveformIcon playing={playing} size={14} />
-            </button>
-          </motion.div>
-        </div>
+            <WaveformIcon playing={playing} size={14} />
+          </button>
+        </motion.div>
 
         {/* Spacer */}
         <div className="pt-20" aria-hidden="true" />
 
-        {/* ── Hero body — LEFT aligned (from v1 layout) ── */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-10 lg:px-12 max-w-7xl mx-auto w-full py-4">
+        {/* ── Hero body — CENTERED ── */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 md:px-10 lg:px-12 max-w-4xl mx-auto w-full py-4">
 
           {/* Badge */}
           <motion.div variants={drop} initial="hidden" animate="visible" custom={1}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/5 mb-6 backdrop-blur-sm select-none w-fit"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-green-500/25 bg-black/40 backdrop-blur-sm mb-8 select-none"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -268,38 +336,32 @@ export const Hero = () => {
             </span>
           </motion.div>
 
-          {/* Heading line 1 */}
-          <motion.div variants={drop} initial="hidden" animate="visible" custom={2}
-            className="flex items-center gap-2 flex-wrap text-2xl sm:text-3xl md:text-[3.25rem] font-light tracking-[-0.01em] leading-[1.18] text-white mb-1"
+          {/* Main heading — serif italic like reference */}
+          <motion.h1 variants={drop} initial="hidden" animate="visible" custom={2}
+            className="hero-serif text-[2.6rem] sm:text-[3.4rem] md:text-[4.2rem] lg:text-[5rem] leading-[1.12] text-white mb-6"
           >
-            <span className="text-white/45 font-light">Hey, I&rsquo;m</span>
-            <span className="inline-block w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full overflow-hidden border border-white/20 align-middle flex-shrink-0">
+            <span className="font-normal text-white/55 italic">Hey, I&rsquo;m </span>
+            <span className="inline-block w-9 h-9 md:w-11 md:h-11 rounded-full overflow-hidden border border-white/20 align-middle mx-1 flex-shrink-0" style={{verticalAlign:"middle"}}>
               <img src={PROFILE.photoUrl} alt="Saranmani M" className="w-full h-full object-cover grayscale" />
             </span>
-            <span className="font-bold">Saranmani M</span>
-          </motion.div>
+            <span className="font-bold italic"> Saranmani M.</span>
+          </motion.h1>
 
-          {/* Heading line 2 */}
+          {/* Sub heading lines */}
           <motion.div variants={drop} initial="hidden" animate="visible" custom={3}
-            className="flex items-center gap-2 flex-wrap text-2xl sm:text-3xl md:text-[3.25rem] font-light tracking-[-0.01em] leading-[1.18] text-white mb-1"
+            className="hero-serif text-[1.4rem] sm:text-[1.7rem] md:text-[2rem] font-normal text-white/55 italic leading-[1.4] mb-1"
           >
-            <span className="text-white/45 font-light">Aspiring</span>
-            <span className="font-bold">Cloud &amp; Storage Engineer</span>
+            Aspiring <span className="text-white font-bold not-italic">Cloud &amp; Storage Engineer</span>
           </motion.div>
-
-          {/* Heading line 3 */}
           <motion.div variants={drop} initial="hidden" animate="visible" custom={4}
-            className="flex items-center gap-2 flex-wrap text-2xl sm:text-3xl md:text-[3.25rem] font-light tracking-[-0.01em] leading-[1.18] text-white"
+            className="hero-serif text-[1.4rem] sm:text-[1.7rem] md:text-[2rem] font-normal text-white/55 italic leading-[1.4] mb-6"
           >
-            <span className="text-white/45 font-light">Building</span>
-            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/40">
-              Secure Infrastructure
-            </span>
+            Building <span className="font-bold not-italic text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/40">Secure Infrastructure</span>
           </motion.div>
 
           {/* Bio */}
           <motion.p variants={drop} initial="hidden" animate="visible" custom={5}
-            className="mt-5 text-[13px] md:text-[15px] text-white/40 max-w-[500px] leading-relaxed"
+            className="text-[13px] md:text-[15px] text-white/40 max-w-[480px] leading-relaxed mb-8"
           >
             I enjoy working with Linux systems, cloud infrastructure, and storage technologies,
             building reliable, secure, and scalable environments while continuously learning.
@@ -307,7 +369,7 @@ export const Hero = () => {
 
           {/* CTAs — socials + Résumé → + Say hi */}
           <motion.div variants={drop} initial="hidden" animate="visible" custom={6}
-            className="mt-7 flex items-center gap-4 flex-wrap"
+            className="flex items-center justify-center gap-4 flex-wrap"
           >
             {/* Social icons */}
             {SOCIAL_ICONS.map(({ Icon, url, k }) => (
