@@ -138,7 +138,7 @@ const SkillsStrip = () => {
 const LogoGrid = () => (
   <div className="relative z-10 w-full px-6 sm:px-10 md:px-16 py-6">
     {/* Label */}
-    <p className="text-[9px] tracking-[0.28em] uppercase font-mono text-white/18 mb-5 select-none">
+    <p className="text-center text-[9px] tracking-[0.28em] uppercase font-mono text-white/18 mb-5 select-none">
       Dream Stacks &amp; Engineering Ambitions
     </p>
     {/* Logo row — evenly distributed, no scrolling */}
@@ -246,16 +246,6 @@ export const Hero = () => {
             >
               <WaveformIcon playing={playing} size={14} />
             </button>
-            <span className="text-white/15 text-sm">|</span>
-            <div className="flex items-center gap-0.5 sm:gap-2">
-              {SOCIAL_ICONS.map(({ Icon, url, k }) => (
-                <a key={k} href={url} target="_blank" rel="noopener noreferrer"
-                  className="soc text-white/35 hover:text-white transition-colors"
-                >
-                  <Icon size={14} strokeWidth={1.7} />
-                </a>
-              ))}
-            </div>
           </motion.div>
         </div>
 
@@ -315,16 +305,27 @@ export const Hero = () => {
             building reliable, secure, and scalable environments while continuously learning.
           </motion.p>
 
-          {/* CTAs */}
+          {/* CTAs — socials + Résumé → + Say hi */}
           <motion.div variants={drop} initial="hidden" animate="visible" custom={6}
-            className="mt-7 flex items-center gap-5 flex-wrap"
+            className="mt-7 flex items-center gap-4 flex-wrap"
           >
+            {/* Social icons */}
+            {SOCIAL_ICONS.map(({ Icon, url, k }) => (
+              <a key={k} href={url} target="_blank" rel="noopener noreferrer"
+                data-testid={`hero-social-${k}`}
+                className="text-white/45 hover:text-white transition-colors p-1"
+              >
+                <Icon size={18} strokeWidth={1.5} />
+              </a>
+            ))}
+            {/* Résumé link */}
             <a href={PROFILE.resumeUrl} target="_blank" rel="noopener noreferrer"
-              className="text-[11px] tracking-[0.22em] uppercase text-white/50 hover:text-white transition-colors py-2"
+              className="text-[11px] tracking-[0.22em] uppercase text-white/50 hover:text-white transition-colors py-2 ml-1"
             >
               Résumé →
             </a>
             <span className="w-px h-4 bg-white/15" />
+            {/* Say hi — untouched */}
             <a href={`mailto:${PROFILE.email}`}
               className="inline-flex items-center gap-1.5 bg-[#e8ff47] text-black text-[11px] font-bold tracking-[0.15em] uppercase px-5 py-2.5 rounded-full hover:opacity-90 active:opacity-80 transition-opacity"
             >
@@ -332,23 +333,6 @@ export const Hero = () => {
             </a>
           </motion.div>
         </div>
-
-        {/* ── Scroll indicator ── */}
-        <motion.div variants={drop} initial="hidden" animate="visible" custom={7}
-          className="relative z-10 flex items-center gap-4 mb-2 px-6 md:px-10 lg:px-12 text-white/22 text-[10px] tracking-[0.2em] uppercase max-w-7xl mx-auto w-full"
-        >
-          <span className="hidden sm:inline">Scroll down</span>
-          <div className="h-px flex-1 max-w-[140px] bg-white/10" />
-          <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center pt-1.5 shrink-0">
-            <motion.div
-              className="w-1 h-1.5 bg-white/35 rounded-full"
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </div>
-          <div className="h-px flex-1 max-w-[140px] bg-white/10" />
-          <span className="hidden sm:inline">to see projects</span>
-        </motion.div>
 
         {/* ── Static logo grid ── */}
         <motion.div variants={drop} initial="hidden" animate="visible" custom={8}>
